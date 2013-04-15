@@ -1,5 +1,7 @@
 // Khoa Bui 100%
 // Use the driver file that I modified. 
+// marshall goes xml to java bean
+// unmarshall goes from java bean to xml
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,14 +13,17 @@ public class Driver
         //creates the java object
         String filename="test.xml";
         //file name that will be read in
+         System.out.println("Creating XML output");
+        String output=XmlMarshaller. marshall(course);
         System.out.println("Creating Java Objects");
-        Course xml= XmlMarshaller.marshall( filename );
-        // takes in a xml file and then returns a  java object
-        print_Java_obj(xml);
+        System.out.println(output);
+        // Course xml=   (Course) XmlMarshaller.unmarshall( course);
+       
+        // print_Java_obj(xml);
         //prints out the java objects
 
-        System.out.println("Creating XML output");
-          XmlMarshaller.unmarshall(course);
+       
+          
         // takes a java object and creates xml string to file output. 
         // Check output file for correct java object course to xml
         
