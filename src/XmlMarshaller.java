@@ -4,22 +4,117 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
 public class XmlMarshaller {
 	Course course=new Course();
-	
-	public static String marshall (Course course)
+	public static void unmarshall(Course course)
+	{
+		//Course temp=new Course();
+		String temp="";
+		try {
+				
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder;
+			
+			docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.newDocument();
+			Element rootElement = doc.createElement("Course");
+			
+			doc.appendChild(rootElement);
+			// department elements
+			Element dep = doc.createElement("department");
+			rootElement.appendChild(dep);
+			dep.appendChild(doc.createTextNode(course.getDepartment()));
+			
+			Element num = doc.createElement("number");
+			rootElement.appendChild(num);
+			num.appendChild(doc.createTextNode(Integer.toString(course.getNumber())));
+			
+			Element tit=doc.createElement("title");
+			rootElement.appendChild(tit);
+			tit.appendChild(doc.createTextNode(course.getTitle()));
+			
+			Element teac=doc.createElement("teacher");
+			rootElement.appendChild(teac);
+			
+			Element pteac=doc.createElement("Person");
+			teac.appendChild(pteac);
+			
+			Element tname=doc.createElement("name");
+			pteac.appendChild(tname);
+			tname.appendChild(doc.createTextNode(course.getTeacher().getName()));
+			
+			Element tid=doc.createElement("id");
+			pteac.appendChild(tid);
+			tid.appendChild(doc.createTextNode(Integer.toString(course.getTeacher().getId())));
+			
+			Element stud=doc.createElement("students");
+			rootElement.appendChild(stud);
+			
+			for(int i=0;i<course.getStudents().size();i++)
+			{
+				//System.out.println("number " +i);
+				Element tempP=doc.createElement("Person");
+				stud.appendChild(tempP);
+				
+					Element tempS= doc.createElement("name");
+					tempP.appendChild(tempS);
+					tempS.appendChild(doc.createTextNode(course.getStudents().get(i).getName()));
+					
+					Element tempI= doc.createElement("id");
+					tempP.appendChild(tempI);
+					tempI.appendChild(doc.createTextNode(Integer.toString(course.getStudents().get(i).getId())));
+					
+					
+					
+			}
+			
+			 
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File("output_file.xml"));
+	 
+			// Output to console for testing
+			// StreamResult result = new StreamResult(System.out);
+	 
+			transformer.transform(source, result);
+	 
+			System.out.println("File saved!");
+			}
+		catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		  }
+ 
+		// root elements
+		
+		
+		 
+	}
+	public static Course marshall ( String filename)
 	{ 
 		
 
 		 try {
 			 
-				File file = new File("test.xml");//reads in file
+				File file = new File(filename);//reads in file
 			 
 				DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance()
 			                             .newDocumentBuilder();
@@ -45,7 +140,7 @@ public class XmlMarshaller {
 	    	return temp;
 	    	
 	    }
-		private static String readxml(Document doc)
+		private static Course readxml(Document doc)
 		{
 			Course course= new Course();
 			if (doc.hasChildNodes()) {
@@ -143,7 +238,7 @@ public class XmlMarshaller {
 			}
 		String	parsered=makestring(course);
 		//System.out.print(parsered);
-		return parsered;
+		return course;
 		}
 		public static String makestring(Course course)
 		{
